@@ -1,0 +1,46 @@
+---
+- hosts: all
+  remote_user: besp
+  become_method: sudo
+  become: true
+
+  tasks:
+    - name: verify type of application
+      verify_disks:
+        profile: APP
+
+    - name: Download besp_set_ohs.sh
+      get_url:
+        url: http://besp.falabella.com/repo/{{type_of_env}}/ohs12c/besp_set_ohs.sh
+        dest: /tmp/besp_set_ohs.sh 
+        mode: 0750
+
+    - name: Download besp_eject_ohs.sh
+      get_url:
+        url: http://besp.falabella.com/repo/{{type_of_env}}/ohs12c/besp_ejec_ohs.sh
+        dest: /tmp/besp_eject_ohs.sh 
+        mode: 0750
+
+    - name: Download besp_set_weblogic.sh
+      get_url:
+        url: http://besp.falabella.com/repo/{{type_of_env}}/weblogic12r2/besp_set_weblogic.sh
+        dest: /tmp/besp_set_weblogic.sh
+        mode: 0750
+        
+    - name: Download besp_eject_weblogic.sh
+      get_url:
+        url: http://besp.falabella.com/repo/{{type_of_env}}/weblogic12r2/besp_ejec_weblogic.sh
+        dest: /tmp/besp_ejec_weblogic.sh
+        mode: 0750        
+
+    - name: Install OHS
+      shell: "{{ item }}"
+      with_items:
+        - /tmp/besp_set_ohs.sh
+        - /tmp/besp_ejec_ohs.sh
+
+    - name: Install WEBLOGIC 
+      shell: "{{ item }}"
+      with_items:
+        - /tmp/besp_set_weblogic.sh
+        - /tmp/besp_ejec_weblogic.sh
